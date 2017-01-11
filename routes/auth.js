@@ -9,54 +9,49 @@ const errorFactory = require('../services/errorFactory');
 const userService = require('../services/userService');
 
 /**
- * Temp object with users
- * @type {Array}
- */
-const users = [{
-  username: 'mthahzan',
-  password: 'user@123',
-}, {
-  username: 'mnhaqeel',
-  password: 'user@123',
-}, {
-  username: 'a',
-  password: 'a',
-}];
-
-/**
- * Checks if the given credentials are correct
+ * Finds the user with the given credentials
  * @param  {String} username The username
  * @param  {String} password The password
- * @return {Boolean}         Flag specifying whether the user exists
+ * @return {Promise}         Flag specifying whether the user exists
  */
-const userAvailable = (username, password) => {
-  const user = users.filter((user) =>
-          user.username === username &&
-          user.password === password)[0];
-
-  return user;
+const findUser = (username, password) => {
+  return models
+    .User
+    .find({
+      where: {
+        username,
+        password: userService.getPasswordHash(password)
+      }
+    });
 };
 
 /**
  * Registering the '/login' route
  */
 router.post('/login', (req, res, next) => {
-  if (userAvailable(req.body.username, req.body.password)) {
-    const tokenData = {
-      username: req.username,
-      message: 'Welcome home ',
-      admin: false,
-    };
+  findUser(req.body.username, req.body.password)
+    .then((user) => {
+      if (user) {
+        const tokenData = {
+          user,
+          admin: false
+        };
 
-    res.send({
-      message: `Welcome ${req.body.username}`,
-      token: tokenFactory.issueAuthToken(tokenData),
-    });
-  } else {
-    next(errorFactory.unauthorized(req));
-  }
+        res.send({
+          message: `Welcome ${user.name}`,
+          user,
+          token: tokenFactory.issueAuthToken(tokenData)
+        });
+      } else {
+        throw errorFactory.unauthorized(req);
+      }
+    })
+    .catch(next);
 });
 
+/**
+ * Registering the '/register' route
+ */
 router.post('/register', (req, res, next) => {
   const user = {
     username: req.body.username,
@@ -85,7 +80,16 @@ router.post('/register', (req, res, next) => {
         return promise;
       })
       .then((createdUser) => {
-        res.json(createdUser);
+        const tokenData = {
+          user: createdUser,
+          admin: false
+        };
+
+        res.json({
+          user: createdUser,
+          message: `Welcome ${createdUser.name}`,
+          token: tokenFactory.issueAuthToken(tokenData)
+        });
       })
       .catch(next);
   } else {

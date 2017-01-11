@@ -2,7 +2,11 @@
 const CryptoJS = require('crypto-js');
 
 const config = require('../config');
-
+/**
+ * validate email
+ * @param  {String} email The email
+ * @return {String}       Relevent error of the incorrect email
+ */
 const validateEmail = (email) => {
   let error = null;
 
@@ -14,7 +18,11 @@ const validateEmail = (email) => {
 
   return error;
 }
-
+/**
+ * Validate user name
+ * @param  {String} name The username
+ * @return {String}      Relevent error of the incorrect username
+ */
 const validateName = (name) => {
   let error = null;
 
@@ -26,7 +34,11 @@ const validateName = (name) => {
 
   return error;
 }
-
+/**
+ * Validate password
+ * @param  {String} password The password
+ * @return {String}          Relevent error of the incorrect password
+ */
 const validatePassword = (password) => {
   let error = null;
 
@@ -38,7 +50,11 @@ const validatePassword = (password) => {
 
   return error;
 }
-
+/**
+ * Retur validate user credentials
+ * @param  {Object}  user User object
+ * @return {Boolean}      Checks whether the user credentials are valied
+ */
 const validateUser = (user) => {
   let validateUser = false;
 
@@ -56,7 +72,7 @@ const validateUser = (user) => {
 /**
  * Returns the hash password
  * @param  {String} password The password
- * @return {object}          [description]
+ * @return {Stirng}          Byte representation of the password
  */
 const getPasswordHash = (password) => {
   return CryptoJS.HmacSHA256(password, config.passwordKey).toString(CryptoJS.enc.Hex);
