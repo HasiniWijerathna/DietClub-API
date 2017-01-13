@@ -16,6 +16,7 @@ const authRequired = require('./middlewares/authRequired');
 const auth = require('./routes/auth');
 const users = require('./routes/users');
 const blogs = require('./routes/blogs');
+const post = require('./routes/post');
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use(cors())
 app.use('/auth', traceGenerator, auth);
 app.use('/users', traceGenerator, authRequired, users);
 app.use('/blogs', traceGenerator, blogs);
+app.use('/post', traceGenerator, post);
 
 // catch 404 and forward to error handler
 app.use(traceGenerator, (req, res, next) => {
