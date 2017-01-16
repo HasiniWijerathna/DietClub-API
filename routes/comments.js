@@ -5,6 +5,7 @@ const router = express.Router(); // eslint-disable-line
 const models = require('../models/index');
 const tokenFactory = require('../services/tokenFactory');
 const errorFactory = require('../services/errorFactory');
+const validateInputs = require('../services/validateInputs');
 
 /* GET all comments listing. */
 router.get('/', (req, res) => {
@@ -19,16 +20,22 @@ router.get('/', (req, res) => {
   });
 });
 
-router.post('/', (req, res) => {
+router.post('/', (req, res, next) => {
   // Create new comment
-  models
-  .Comments
-  .create({
-    comment: req.body.comment
-  })
-    .then((newComment) => {
-    res.json(newComment);
-  });
+  let comment = req.body.comment;
+  let commentError = validateInputs.validateName(req,comment);
+  if (commentError) {
+      next(commentError);
+  } else {
+    models
+    .Comments
+    .create({
+      comment: req.body.comment
+    })
+      .then((newComment) => {
+      res.json(newComment);
+    });
+  }
 });
 
 router.get('/:commentId', (req, res, next) => {
@@ -72,7 +79,7 @@ router.put('/:commentId', (req, res, next) => {
         comment: req.body.comment
       })
     } else {
-      throw errorFactory.badRequest(req, 'comment does not exist');
+      throw errorFactory.badRequest(req, 'Comment does not exist');
     }
 
     return promise;

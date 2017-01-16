@@ -5,6 +5,7 @@ const router = express.Router();
 const models = require('../models/index');
 const tokenFactory = require('../services/tokenFactory');
 const errorFactory = require('../services/errorFactory');
+const validateInputs = require('../services/validateInputs');
 
 router.get('/', (req, res) => {
   // Return all posts
@@ -18,18 +19,28 @@ router.get('/', (req, res) => {
   });
 });
 
-router.post('/', (req, res) => {
+router.post('/', (req, res, next) => {
   // Create new post
-  models
-  .Posts
-  .create({
-    title: req.body.title,
-    content: req.body.content,
-    blogId: req.body.id
-  })
-    .then((newPost) => {
-    res.json(newPost);
-  });
+  let title = req.body.title;
+  let content = req.body.content;
+  let blogId = req.body.blogId;
+  let titleError = validateInputs.validateName(req,title);
+  let contentError = validateInputs.validateName(req,content);
+  //not found
+  if (titleError || contentError) {
+    next(titleError);
+  } else {
+    models
+    .Posts
+    .create({
+      title: req.body.title,
+      content: req.body.content,
+      blogId: req.body.id
+    })
+      .then((newPost) => {
+      res.json(newPost);
+    });
+  }
 });
 
 router.get('/:postId', (req, res, next) => {
@@ -42,9 +53,16 @@ router.get('/:postId', (req, res, next) => {
      }
    })
    .then((existingPost) => {
-      console.log(existingPost);
+     let promise = null;
 
-      res.json(existingPost);
+    if(existingPost) {
+      promise = res.json(existingPost);
+    } else {
+      throw errorFactory.badRequest(req, 'Post does not exist');
+    }
+      // console.log(existingPost);
+      //
+      // res.json(existingPost);
    })
    .catch(next);
 });
@@ -67,7 +85,7 @@ router.put('/:postId', (req, res, next) => {
         content: req.body.content
       })
     } else {
-      throw errorFactory.badRequest(req, 'post does not exist');
+      throw errorFactory.badRequest(req, 'Post does not exist');
     }
 
     return promise;

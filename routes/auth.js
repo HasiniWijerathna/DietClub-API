@@ -79,7 +79,6 @@ router.post('/register', (req, res, next) => {
         } else {
           promise = models.User.create(user);
         }
-
         return promise;
       })
       .then((createdUser) => {
