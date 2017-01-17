@@ -17,7 +17,7 @@ const validateEmail = (email) => {
   }
 
   return error;
-}
+};
 /**
  * Validate user name
  * @param  {String} name The username
@@ -33,7 +33,7 @@ const validateName = (name) => {
   }
 
   return error;
-}
+};
 /**
  * Validate password
  * @param  {String} password The password
@@ -49,7 +49,7 @@ const validatePassword = (password) => {
   }
 
   return error;
-}
+};
 /**
  * Retur validate user credentials
  * @param  {Object}  user User object
@@ -75,7 +75,7 @@ const validateUser = (user) => {
  * @return {Stirng}          Byte representation of the password
  */
 const getPasswordHash = (password) => {
-  return CryptoJS.HmacSHA256(password, config.passwordKey).toString(CryptoJS.enc.Hex);
+  return CryptoJS.HmacSHA256(password, config.passwordKey).toString(CryptoJS.enc.Hex); // eslint-disable-line
 };
 
-module.exports = { validateUser, getPasswordHash };
+module.exports = {validateUser, getPasswordHash};

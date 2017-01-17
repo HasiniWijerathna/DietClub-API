@@ -1,24 +1,13 @@
 {
-  "ecmaVersion": 6,
-  "extends": ["google", "eslint:recommended"],
+  "env": {
+    "browser": false,
+    "node": true,
+    "es6": true
+  },
+  "extends": "google",
   "rules": {
-      "max-len": ["error", 100, { "ignoreComments": true, "ignoreTrailingComments": true }],
-      "indent": [
-          2,
-          2
-      ],
-      "quotes": [
-          2,
-          "single"
-      ],
-      "linebreak-style": [
-          2,
-          "unix"
-      ],
-      "semi": [
-          2,
-          "always"
-      ],
-      "no-console": 0
+    "linebreak-style": [0],
+    "max-len": ["error", 120, 4],
+    "prefer-const": "error"
   }
 }

@@ -2,6 +2,8 @@
 const tokenFactory = require('../services/tokenFactory');
 const errorFactory = require('../services/errorFactory');
 
+const models = require('../models/index');
+
 /**
  * The middleware to authorize requests that should be protected by a login
  * @param  {object}   req  The request object provided by the Express router
@@ -16,10 +18,21 @@ const authRequired = (req, res, next) => {
       .match(/[A-Za-z0-9\-_~\+\/]*\.[A-Za-z0-9\-_~\+\/]*\.[A-Za-z0-9\-_~\+\/]*/)[0];
     const decoded = tokenFactory.verifyAuthToken(token);
 
-    // TODO: Check the user eligibility and inject useful information
-    req.decodedPayload = decoded;
-
-    next();
+    models
+      .User
+      .find({
+        where: {
+          id: decoded.userId,
+        },
+      })
+      .then((user) => {
+        if (user) {
+          req.user = user;
+          next();
+        } else {
+          next(errorFactory.unauthorized(req));
+        }
+      });
   } catch (e) {
     // TODO: Find a way to log this from the universal logger
     console.error(e);

@@ -5,14 +5,14 @@ module.exports = function(sequelize, DataTypes) {
     password: DataTypes.STRING,
     email: DataTypes.STRING,
     name: DataTypes.STRING,
-    avatar: DataTypes.STRING
+    avatar: DataTypes.STRING,
   }, {
     classMethods: {
       associate: function(models) {
         // associations can be defined here
         User.hasMany(models.Blog);
-      }
-    }
+      },
+    },
   });
   return User;
 };

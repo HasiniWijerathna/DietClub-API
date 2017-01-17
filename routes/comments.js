@@ -3,7 +3,6 @@ const express = require('express');
 const router = express.Router(); // eslint-disable-line
 
 const models = require('../models/index');
-const tokenFactory = require('../services/tokenFactory');
 const errorFactory = require('../services/errorFactory');
 const validateInputs = require('../services/validateInputs');
 
@@ -13,7 +12,7 @@ router.get('/', (req, res) => {
   models
   .Comments
   .findAll({
-    attributes: ["id", "comment"]
+    attributes: ['id', 'comment'],
   })
     .then((allComments) => {
     res.json(allComments);
@@ -22,15 +21,15 @@ router.get('/', (req, res) => {
 
 router.post('/', (req, res, next) => {
   // Create new comment
-  let comment = req.body.comment;
-  let commentError = validateInputs.validateName(req,comment);
+  const comment = req.body.comment;
+  const commentError = validateInputs.validateName(req, comment);
   if (commentError) {
       next(commentError);
   } else {
     models
     .Comments
     .create({
-      comment: req.body.comment
+      comment: req.body.comment,
     })
       .then((newComment) => {
       res.json(newComment);
@@ -44,8 +43,8 @@ router.get('/:commentId', (req, res, next) => {
   .Comments
   .find({
      where: {
-       id: req.params.commentId
-     }
+       id: req.params.commentId,
+     },
    })
    .then((existingComment) => {
      let promise = null;
@@ -68,16 +67,16 @@ router.put('/:commentId', (req, res, next) => {
   .Comments
   .find({
     where: {
-      id: req.params.commentId
-    }
+      id: req.params.commentId,
+    },
   })
   .then((comment) => {
     let promise = null;
 
     if (comment) {
       promise = comment.updateAttributes({
-        comment: req.body.comment
-      })
+        comment: req.body.comment,
+      });
     } else {
       throw errorFactory.badRequest(req, 'Comment does not exist');
     }
@@ -94,9 +93,10 @@ router.delete('/:commentId', (req, res, next) => {
   // Delete comment with ID 'commentId'
   models.Comments.destroy({
     where: {
-      id: req.params.commentId
-    }
-  }).then(function(deletedComment) {
+      id: req.params.commentId,
+    },
+  })
+  .then((deletedComment) => {
     res.json(deletedComment);
   });
 });

@@ -3,17 +3,16 @@ const express = require('express');
 const router = express.Router(); // eslint-disable-line
 
 const models = require('../models/index');
-const tokenFactory = require('../services/tokenFactory');
 const errorFactory = require('../services/errorFactory');
 const validateInputs = require('../services/validateInputs');
-
+const authRequired = require('../middlewares/authRequired');
 /* GET all blogs listing. */
 router.get('/', (req, res) => {
   // Return all Blogs
   models
   .Blog
   .findAll({
-    attributes: ["id", "name"]
+    attributes: ['id', 'name'],
   })
     .then((allBlogs) => {
     res.json(allBlogs);
@@ -26,8 +25,8 @@ router.get('/:blogId', (req, res, next) => {
   .Blog
   .find({
      where: {
-       id: req.params.blogId
-     }
+       id: req.params.blogId,
+     },
    })
    .then((existingBlog) => {
       console.log(existingBlog);
@@ -37,17 +36,17 @@ router.get('/:blogId', (req, res, next) => {
    .catch(next);
 });
 
-router.post('/', (req, res, next) => {
+router.post('/', authRequired, (req, res, next) => {
   // Create new blog
- let name =   req.body.name;
- let userId =  req.body.id;
- let blogNameError = validateInputs.validateName(req,name);
+ const name = req.body.name;
+ const blogNameError = validateInputs.validateName(req, name);
+
   if (!blogNameError ) {
     models
     .Blog
     .create({
       name: req.body.name,
-      userId: req.body.userId
+      UserId: req.user.userId,
     })
       .then((newBlog) => {
       res.json(newBlog);
@@ -64,18 +63,18 @@ router.put('/:blogId', (req, res, next) => {
   .Blog
   .find({
     where: {
-      id: req.params.blogId
-    }
+      id: req.params.blogId,
+    },
   })
   .then((blog) => {
     let promise = null;
-    let name = req.body.name;
-    let blogNameError = validateInputs.validateName(req,name);
+    const name = req.body.name;
+    const blogNameError = validateInputs.validateName(req, name);
 
     if (blog && !blogNameError) {
       promise = blog.updateAttributes({
-        name: req.body.name
-      })
+        name: req.body.name,
+      });
     } else if (blogNameError) {
       next(blogNameError);
     } else {
@@ -94,8 +93,8 @@ router.delete('/:blogId', (req, res, next) => {
   // Delete blog with ID 'blogId'
   models.Blog.destroy({
     where: {
-      id: req.params.blogId
-    }
+      id: req.params.blogId,
+    },
   })
   .then((deletedBlog) => {
     res.json(deletedBlog);

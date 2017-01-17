@@ -16,7 +16,7 @@ router.get('/', (req, res) => {
 });
 
 router.get('/get', (req, res) => {
-  res.send('GET request ')
+  res.send('GET request ');
 });
 
 module.exports = router;

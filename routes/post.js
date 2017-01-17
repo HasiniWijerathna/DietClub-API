@@ -1,32 +1,31 @@
 'use strict';
 const express = require('express');
-const router = express.Router();
+const router = express.router();
 
 const models = require('../models/index');
-const tokenFactory = require('../services/tokenFactory');
 const errorFactory = require('../services/errorFactory');
 const validateInputs = require('../services/validateInputs');
+const authRequired = require('../middlewares/authRequired');
 
 router.get('/', (req, res) => {
   // Return all posts
   models
   .Posts
   .findAll({
-    attributes: ["id", "title", "content"]
+    attributes: ['id', 'title', 'content'],
   })
     .then((allPosts) => {
     res.json(allPosts);
   });
 });
 
-router.post('/', (req, res, next) => {
+router.post('/', authRequired, (req, res, next) => {
   // Create new post
-  let title = req.body.title;
-  let content = req.body.content;
-  let blogId = req.body.blogId;
-  let titleError = validateInputs.validateName(req,title);
-  let contentError = validateInputs.validateName(req,content);
-  //not found
+  const title = req.body.title;
+  const content = req.body.content;
+  const titleError = validateInputs.validateName(req, title);
+  const contentError = validateInputs.validateName(req, content);
+
   if (titleError || contentError) {
     next(titleError);
   } else {
@@ -35,11 +34,12 @@ router.post('/', (req, res, next) => {
     .create({
       title: req.body.title,
       content: req.body.content,
-      blogId: req.body.id
+      BlogId: req.body.blogId,
     })
       .then((newPost) => {
       res.json(newPost);
-    });
+    })
+    .catch(next);
   }
 });
 
@@ -49,8 +49,8 @@ router.get('/:postId', (req, res, next) => {
   .Posts
   .find({
      where: {
-       id: req.params.postId
-     }
+       id: req.params.postId,
+     },
    })
    .then((existingPost) => {
      let promise = null;
@@ -73,8 +73,8 @@ router.put('/:postId', (req, res, next) => {
   .Posts
   .find({
     where: {
-      id: req.params.postId
-    }
+      id: req.params.postId,
+    },
   })
   .then((post) => {
     let promise = null;
@@ -82,8 +82,8 @@ router.put('/:postId', (req, res, next) => {
     if (post) {
       promise = post.updateAttributes({
         title: req.body.title,
-        content: req.body.content
-      })
+        content: req.body.content,
+      });
     } else {
       throw errorFactory.badRequest(req, 'Post does not exist');
     }
@@ -100,13 +100,11 @@ router.delete('/:postId', (req, res, next) => {
   // Delete post with ID 'postId'
   models.Posts.destroy({
     where: {
-      id: req.params.postId
-    }
+      id: req.params.postId,
+    },
   }).then(function(deletedPost) {
     res.json(deletedPost);
   });
 });
-
-
 
 module.exports = router;

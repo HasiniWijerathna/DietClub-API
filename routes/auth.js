@@ -20,8 +20,8 @@ const findUser = (username, password) => {
     .find({
       where: {
         username,
-        password: userService.getPasswordHash(password)
-      }
+        password: userService.getPasswordHash(password),
+      },
     });
 };
 
@@ -33,14 +33,13 @@ router.post('/login', (req, res, next) => {
     .then((user) => {
       if (user) {
         const tokenData = {
-          user,
-          admin: false
+          userId: user.id,
         };
 
         res.send({
           message: `Welcome ${user.name}`,
           user,
-          token: tokenFactory.issueAuthToken(tokenData)
+          token: tokenFactory.issueAuthToken(tokenData),
         });
       } else {
         throw errorFactory.unauthorized(req);
@@ -59,7 +58,7 @@ router.post('/register', (req, res, next) => {
   const user = {
     username: req.body.username,
     email: req.body.email,
-    password: req.body.password
+    password: req.body.password,
   };
 
   if (userService.validateUser(user)) {
@@ -68,8 +67,8 @@ router.post('/register', (req, res, next) => {
       .User
       .find({
         where: {
-          email: req.body.email
-        }
+          email: req.body.email,
+        },
       })
       .then((existingUser) => {
         let promise = null;
@@ -84,13 +83,12 @@ router.post('/register', (req, res, next) => {
       .then((createdUser) => {
         const tokenData = {
           user: createdUser,
-          admin: false
+          admin: false,
         };
-
         res.json({
           user: createdUser,
           message: `Welcome ${createdUser.name}`,
-          token: tokenFactory.issueAuthToken(tokenData)
+          token: tokenFactory.issueAuthToken(tokenData),
         });
       })
       .catch(next);
