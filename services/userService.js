@@ -51,7 +51,7 @@ const validatePassword = (password) => {
   return error;
 };
 /**
- * Retur validate user credentials
+ * Returns validate user credentials
  * @param  {Object}  user User object
  * @return {Boolean}      Checks whether the user credentials are valied
  */

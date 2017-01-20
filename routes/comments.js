@@ -19,8 +19,8 @@ router.get('/', (req, res) => {
   });
 });
 
+/* Create new comment */
 router.post('/', (req, res, next) => {
-  // Create new comment
   const comment = req.body.comment;
   const commentError = validateInputs.validateName(req, comment);
   if (commentError) {
@@ -36,9 +36,8 @@ router.post('/', (req, res, next) => {
     });
   }
 });
-
+/* Return comment with ID 'commentId' */
 router.get('/:commentId', (req, res, next) => {
-  // Return comment with ID 'commentId'
   models
   .Comments
   .find({
@@ -61,8 +60,8 @@ router.get('/:commentId', (req, res, next) => {
    .catch(next);
 });
 
+/* Update comment with ID 'commentId' */
 router.put('/:commentId', (req, res, next) => {
-  // Update comment with ID 'commentId'
   models
   .Comments
   .find({

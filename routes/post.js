@@ -1,6 +1,6 @@
 'use strict';
 const express = require('express');
-const router = express.router();
+const router = express.Router();
 
 const models = require('../models/index');
 const errorFactory = require('../services/errorFactory');
@@ -27,7 +27,7 @@ router.post('/', authRequired, (req, res, next) => {
   const contentError = validateInputs.validateName(req, content);
 
   if (titleError || contentError) {
-    next(titleError);
+    next(contentError);
   } else {
     models
     .Posts

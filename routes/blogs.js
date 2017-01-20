@@ -13,10 +13,13 @@ router.get('/', (req, res) => {
   .Blog
   .findAll({
     attributes: ['id', 'name'],
+    include: [models.Posts],
   })
     .then((allBlogs) => {
-    res.json(allBlogs);
-  });
+      res.json({
+        results: allBlogs,
+      });
+    });
 });
 
 router.get('/:blogId', (req, res, next) => {
@@ -27,6 +30,7 @@ router.get('/:blogId', (req, res, next) => {
      where: {
        id: req.params.blogId,
      },
+     include: [models.Posts],
    })
    .then((existingBlog) => {
       console.log(existingBlog);

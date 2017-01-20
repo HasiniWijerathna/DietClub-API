@@ -29,10 +29,10 @@ app.use(cors())
 
 // Register the routes
 app.use('/auth', traceGenerator, auth);
-app.use('/users', traceGenerator, authRequired, users);
-app.use('/blogs', traceGenerator, blogs);
+app.use('/user', traceGenerator, authRequired, users);
+app.use('/blog', traceGenerator, blogs);
 app.use('/post', traceGenerator, post);
-app.use('/comments', traceGenerator, comments);
+app.use('/comment', traceGenerator, comments);
 
 // catch 404 and forward to error handler
 app.use(traceGenerator, (req, res, next) => {
