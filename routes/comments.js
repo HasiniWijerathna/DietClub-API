@@ -5,6 +5,9 @@ const router = express.Router(); // eslint-disable-line
 const models = require('../models/index');
 const errorFactory = require('../services/errorFactory');
 const validateInputs = require('../services/validateInputs');
+const authRequired = require('../middlewares/authRequired');
+const modelDeleteAuthorizer = require('../middlewares/modelDeleteAuthorizer').bind(null, models.Comments, 'commentId');
+const modelEditAuthorizer =  require('../middlewares/modelEditAuthorizer').bind(null, models.Comments, 'commentId');
 
 /* GET all comments listing. */
 router.get('/', (req, res) => {
@@ -20,7 +23,7 @@ router.get('/', (req, res) => {
 });
 
 /* Create new comment */
-router.post('/', (req, res, next) => {
+router.post('/', authRequired, (req, res, next) => {
   const comment = req.body.comment;
   const commentError = validateInputs.validateName(req, comment);
   if (commentError) {
@@ -31,6 +34,7 @@ router.post('/', (req, res, next) => {
     .create({
       comment: req.body.comment,
       PostId: req.body.postId,
+      UserId: req.user.id,
     })
       .then((newComment) => {
       res.json(newComment);
@@ -62,7 +66,7 @@ router.get('/:commentId', (req, res, next) => {
 });
 
 /* Update comment with ID 'commentId' */
-router.put('/:commentId', (req, res, next) => {
+router.put('/:commentId', modelDeleteAuthorizer, (req, res, next) => {
   models
   .Comments
   .find({
@@ -89,7 +93,7 @@ router.put('/:commentId', (req, res, next) => {
   .catch(next);
 });
 
-router.delete('/:commentId', (req, res, next) => {
+router.delete('/:commentId', modelDeleteAuthorizer, (req, res, next) => {
   // Delete comment with ID 'commentId'
   models.Comments.destroy({
     where: {

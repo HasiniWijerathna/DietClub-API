@@ -6,6 +6,9 @@ const models = require('../models/index');
 const errorFactory = require('../services/errorFactory');
 const validateInputs = require('../services/validateInputs');
 const authRequired = require('../middlewares/authRequired');
+const modelDeleteAuthorizer = require('../middlewares/modelDeleteAuthorizer').bind(null, models.Blog, 'blogId');
+const modelEditAuthorizer = require('../middlewares/modelEditAuthorizer').bind(null, models.Blog, 'blogId');
+
 /* GET all blogs listing. */
 router.get('/', (req, res) => {
   // Return all Blogs
@@ -47,13 +50,12 @@ router.post('/', authRequired, (req, res, next) => {
   // Create new blog
  const name = req.body.name;
  const blogNameError = validateInputs.validateName(req, name);
-
   if (!blogNameError ) {
     models
     .Blog
     .create({
       name: req.body.name,
-      UserId: req.user.userId,
+      UserId: req.user.id,
     })
       .then((newBlog) => {
       res.json(newBlog);
@@ -64,7 +66,7 @@ router.post('/', authRequired, (req, res, next) => {
   }
 });
 
-router.put('/:blogId', (req, res, next) => {
+router.put('/:blogId', authRequired, modelEditAuthorizer, (req, res, next) => {
   // Update blog with ID 'blogId'
   models
   .Blog
@@ -96,7 +98,7 @@ router.put('/:blogId', (req, res, next) => {
   .catch(next);
 });
 
-router.delete('/:blogId', (req, res, next) => {
+router.delete('/:blogId', authRequired, modelDeleteAuthorizer, (req, res, next) => {
   // Delete blog with ID 'blogId'
   models.Blog.destroy({
     where: {

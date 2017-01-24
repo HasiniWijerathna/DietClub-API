@@ -6,6 +6,7 @@ const models = require('../models/index');
 const errorFactory = require('../services/errorFactory');
 const validateInputs = require('../services/validateInputs');
 const authRequired = require('../middlewares/authRequired');
+const modelDeleteAuthorizer = require('../middlewares/modelDeleteAuthorizer').bind(null, models.Posts, 'postId');
 
 router.get('/', (req, res) => {
   // Return all posts
@@ -39,6 +40,7 @@ router.post('/', authRequired, (req, res, next) => {
       title: req.body.title,
       content: req.body.content,
       BlogId: req.body.blogId,
+      UserId: req.user.id,
     })
       .then((newPost) => {
       res.json(newPost);
@@ -95,7 +97,7 @@ router.put('/:postId', (req, res, next) => {
   .catch(next);
 });
 
-router.delete('/:postId', (req, res, next) => {
+router.delete('/:postId', authRequired, modelDeleteAuthorizer, (req, res, next) => {
   // Delete post with ID 'postId'
   models.Posts.destroy({
     where: {
