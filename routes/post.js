@@ -1,6 +1,6 @@
 'use strict';
 const express = require('express');
-const router = express.Router();
+const router = express.Router(); // eslint-disable-line
 
 const models = require('../models/index');
 const errorFactory = require('../services/errorFactory');
@@ -13,6 +13,10 @@ router.get('/', (req, res) => {
   .Posts
   .findAll({
     attributes: ['id', 'title', 'content'],
+    include: [models.Comments],
+    order: [
+      ['title', 'ASC'],
+    ],
   })
     .then((allPosts) => {
     res.json(allPosts);
@@ -51,18 +55,13 @@ router.get('/:postId', (req, res, next) => {
      where: {
        id: req.params.postId,
      },
+     include: [models.Comments],
    })
    .then((existingPost) => {
-     let promise = null;
-
-    if(existingPost) {
-      promise = res.json(existingPost);
-    } else {
-      throw errorFactory.badRequest(req, 'Post does not exist');
-    }
-      // console.log(existingPost);
-      //
-      // res.json(existingPost);
+      if (!existingPost) {
+        throw errorFactory.badRequest(req, 'Post does not exist');
+      }
+      res.json(existingPost);
    })
    .catch(next);
 });

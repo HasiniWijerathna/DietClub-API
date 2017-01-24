@@ -30,6 +30,7 @@ router.post('/', (req, res, next) => {
     .Comments
     .create({
       comment: req.body.comment,
+      PostId: req.body.postId,
     })
       .then((newComment) => {
       res.json(newComment);

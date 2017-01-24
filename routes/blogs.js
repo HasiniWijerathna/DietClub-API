@@ -14,6 +14,9 @@ router.get('/', (req, res) => {
   .findAll({
     attributes: ['id', 'name'],
     include: [models.Posts],
+    order: [
+      ['name', 'ASC'],
+    ],
   })
     .then((allBlogs) => {
       res.json({
