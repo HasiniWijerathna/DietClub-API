@@ -22,7 +22,7 @@ const authRequired = (req, res, next) => {
       .User
       .find({
         where: {
-          id: decoded.userId,
+          id: decoded.user.id,
         },
       })
       .then((user) => {

@@ -7,7 +7,6 @@ const errorFactory = require('../services/errorFactory');
 const validateInputs = require('../services/validateInputs');
 const authRequired = require('../middlewares/authRequired');
 const modelDeleteAuthorizer = require('../middlewares/modelDeleteAuthorizer').bind(null, models.Comments, 'commentId');
-const modelEditAuthorizer =  require('../middlewares/modelEditAuthorizer').bind(null, models.Comments, 'commentId');
 
 /* GET all comments listing. */
 router.get('/', (req, res) => {

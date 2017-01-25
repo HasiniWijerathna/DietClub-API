@@ -22,6 +22,9 @@ const findUser = (username, password) => {
         username,
         password: userService.getPasswordHash(password),
       },
+      attributes: {
+        exclude: ['password'],
+      },
     });
 };
 
@@ -33,7 +36,11 @@ router.post('/login', (req, res, next) => {
     .then((user) => {
       if (user) {
         const tokenData = {
-          userId: user.id,
+          user: {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+          },
         };
 
         res.send({
@@ -82,9 +89,13 @@ router.post('/register', (req, res, next) => {
       })
       .then((createdUser) => {
         const tokenData = {
-          user: createdUser,
-          admin: false,
+          user: {
+            id: createdUser.id,
+            username: createdUser.username,
+            email: createdUser.email,
+          },
         };
+
         res.json({
           user: createdUser,
           message: `Welcome ${createdUser.name}`,
