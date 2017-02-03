@@ -58,14 +58,12 @@ router.get('/:commentId', (req, res, next) => {
        throw errorFactory.badRequest(req, 'comment does not exist');
      }
      return promise;
-      // console.log(existingComment);
-      // res.json(existingComment);
    })
    .catch(next);
 });
 
 /* Update comment with ID 'commentId' */
-router.put('/:commentId', modelDeleteAuthorizer, (req, res, next) => {
+router.put('/:commentId', authRequired, modelDeleteAuthorizer, (req, res, next) => {
   models
   .Comments
   .find({
@@ -92,7 +90,7 @@ router.put('/:commentId', modelDeleteAuthorizer, (req, res, next) => {
   .catch(next);
 });
 
-router.delete('/:commentId', modelDeleteAuthorizer, (req, res, next) => {
+router.delete('/:commentId', authRequired, modelDeleteAuthorizer, (req, res, next) => {
   // Delete comment with ID 'commentId'
   models.Comments.destroy({
     where: {

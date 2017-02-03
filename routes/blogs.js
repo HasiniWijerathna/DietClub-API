@@ -66,6 +66,47 @@ router.post('/', authRequired, (req, res, next) => {
   }
 });
 
+router.post('/:blogId/like', authRequired, (req, res, next) => {
+  let blog = null;
+
+  // Count the number of likes
+  models
+    .Blog
+    .find({
+       where: {
+         id: req.params.blogId,
+       },
+     })
+    .then((queriedBlog) => {
+      let promise = null;
+
+      if (blog) {
+        blog = queriedBlog;
+
+        promise = models.Blog.update({
+          count: blog.count + 1,
+        }, {
+          where: {
+            id: blog.id,
+          },
+        });
+      } else {
+        throw errorFactory.badRequest(req, 'Blog does not exist');
+      }
+      return promise;
+    })
+    .then(() => {
+      models
+      .BlogCount
+      .create({
+        BlogId: blog.id,
+        UserId: req.user.id,
+      });
+      res.json(blog);
+    })
+    .catch(next);
+});
+
 router.put('/:blogId', authRequired, modelEditAuthorizer, (req, res, next) => {
   // Update blog with ID 'blogId'
   models
@@ -97,6 +138,7 @@ router.put('/:blogId', authRequired, modelEditAuthorizer, (req, res, next) => {
   })
   .catch(next);
 });
+
 
 router.delete('/:blogId', authRequired, modelDeleteAuthorizer, (req, res, next) => {
   // Delete blog with ID 'blogId'
