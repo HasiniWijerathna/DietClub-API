@@ -6,6 +6,7 @@ const models = require('../models/index');
 const errorFactory = require('../services/errorFactory');
 const validateInputs = require('../services/validateInputs');
 const authRequired = require('../middlewares/authRequired');
+const userIdentifier = require('../middlewares/userIdentifier');
 const modelDeleteAuthorizer = require('../middlewares/modelDeleteAuthorizer').bind(null, models.Comments, 'commentId');
 
 /* GET all comments listing. */
@@ -22,7 +23,7 @@ router.get('/', (req, res) => {
 });
 
 /* Create new comment */
-router.post('/', authRequired, (req, res, next) => {
+router.post('/', userIdentifier, authRequired, (req, res, next) => {
   const comment = req.body.comment;
   const commentError = validateInputs.validateName(req, comment);
   if (commentError) {
@@ -63,7 +64,7 @@ router.get('/:commentId', (req, res, next) => {
 });
 
 /* Update comment with ID 'commentId' */
-router.put('/:commentId', authRequired, modelDeleteAuthorizer, (req, res, next) => {
+router.put('/:commentId', userIdentifier, authRequired, modelDeleteAuthorizer, (req, res, next) => {
   models
   .Comments
   .find({
@@ -90,7 +91,7 @@ router.put('/:commentId', authRequired, modelDeleteAuthorizer, (req, res, next) 
   .catch(next);
 });
 
-router.delete('/:commentId', authRequired, modelDeleteAuthorizer, (req, res, next) => {
+router.delete('/:commentId', userIdentifier, authRequired, modelDeleteAuthorizer, (req, res, next) => {
   // Delete comment with ID 'commentId'
   models.Comments.destroy({
     where: {

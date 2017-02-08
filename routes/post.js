@@ -4,6 +4,7 @@ const router = express.Router(); // eslint-disable-line
 
 const models = require('../models/index');
 const errorFactory = require('../services/errorFactory');
+const userIdentifier = require('../middlewares/userIdentifier');
 const validateInputs = require('../services/validateInputs');
 const authRequired = require('../middlewares/authRequired');
 const modelDeleteAuthorizer = require('../middlewares/modelDeleteAuthorizer').bind(null, models.Posts, 'postId');
@@ -24,7 +25,7 @@ router.get('/', (req, res) => {
   });
 });
 
-router.post('/', authRequired, (req, res, next) => {
+router.post('/', userIdentifier, authRequired, (req, res, next) => {
   // Create new post
   const title = req.body.title;
   const content = req.body.content;
@@ -49,7 +50,7 @@ router.post('/', authRequired, (req, res, next) => {
   }
 });
 
-router.get('/:postId', (req, res, next) => {
+router.get('/:postId', userIdentifier, (req, res, next) => {
   // Return post with ID 'postId'
   models
   .Posts
@@ -68,7 +69,7 @@ router.get('/:postId', (req, res, next) => {
    .catch(next);
 });
 
-router.put('/:postId', (req, res, next) => {
+router.put('/:postId', userIdentifier, (req, res, next) => {
   // Update post with ID 'postId'
   models
   .Posts
@@ -97,7 +98,7 @@ router.put('/:postId', (req, res, next) => {
   .catch(next);
 });
 
-router.delete('/:postId', authRequired, modelDeleteAuthorizer, (req, res, next) => {
+router.delete('/:postId', userIdentifier, authRequired, modelDeleteAuthorizer, (req, res, next) => {
   // Delete post with ID 'postId'
   models.Posts.destroy({
     where: {

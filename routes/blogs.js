@@ -6,29 +6,37 @@ const models = require('../models/index');
 const errorFactory = require('../services/errorFactory');
 const validateInputs = require('../services/validateInputs');
 const authRequired = require('../middlewares/authRequired');
+const userIdentifier = require('../middlewares/userIdentifier');
 const modelDeleteAuthorizer = require('../middlewares/modelDeleteAuthorizer').bind(null, models.Blog, 'blogId');
 const modelEditAuthorizer = require('../middlewares/modelEditAuthorizer').bind(null, models.Blog, 'blogId');
 
 /* GET all blogs listing. */
-router.get('/', (req, res) => {
+router.get('/', userIdentifier, (req, res) => {
   // Return all Blogs
+
+  const userWhereClause = {};
+  if (req.user) {
+    userWhereClause.UserId = req.user.id;
+  }
+
   models
   .Blog
   .findAll({
     attributes: ['id', 'name'],
-    include: [models.Posts],
+     include: [models.Posts],
     order: [
       ['name', 'ASC'],
     ],
   })
     .then((allBlogs) => {
+      console.log(allBlogs);
       res.json({
         results: allBlogs,
       });
     });
 });
 
-router.get('/:blogId', (req, res, next) => {
+router.get('/:blogId', userIdentifier, (req, res, next) => {
   // Return blog with ID 'blogId'
   models
   .Blog
@@ -36,17 +44,15 @@ router.get('/:blogId', (req, res, next) => {
      where: {
        id: req.params.blogId,
      },
-     include: [models.Posts],
+     include: [models.Posts, models.BlogCount],
    })
    .then((existingBlog) => {
-      console.log(existingBlog);
-
       res.json(existingBlog);
    })
    .catch(next);
 });
 
-router.post('/', authRequired, (req, res, next) => {
+router.post('/', userIdentifier, authRequired, (req, res, next) => {
   // Create new blog
  const name = req.body.name;
  const blogNameError = validateInputs.validateName(req, name);
@@ -66,9 +72,8 @@ router.post('/', authRequired, (req, res, next) => {
   }
 });
 
-router.post('/:blogId/like', authRequired, (req, res, next) => {
+router.post('/:blogId/like', userIdentifier, authRequired, (req, res, next) => {
   let blog = null;
-
   // Count the number of likes
   models
     .Blog
@@ -80,7 +85,7 @@ router.post('/:blogId/like', authRequired, (req, res, next) => {
     .then((queriedBlog) => {
       let promise = null;
 
-      if (blog) {
+      if (queriedBlog) {
         blog = queriedBlog;
 
         promise = models.Blog.update({
@@ -107,7 +112,7 @@ router.post('/:blogId/like', authRequired, (req, res, next) => {
     .catch(next);
 });
 
-router.put('/:blogId', authRequired, modelEditAuthorizer, (req, res, next) => {
+router.put('/:blogId', userIdentifier, authRequired, modelEditAuthorizer, (req, res, next) => {
   // Update blog with ID 'blogId'
   models
   .Blog
@@ -140,7 +145,7 @@ router.put('/:blogId', authRequired, modelEditAuthorizer, (req, res, next) => {
 });
 
 
-router.delete('/:blogId', authRequired, modelDeleteAuthorizer, (req, res, next) => {
+router.delete('/:blogId', userIdentifier, authRequired, modelDeleteAuthorizer, (req, res, next) => {
   // Delete blog with ID 'blogId'
   models.Blog.destroy({
     where: {
@@ -150,6 +155,45 @@ router.delete('/:blogId', authRequired, modelDeleteAuthorizer, (req, res, next) 
   .then((deletedBlog) => {
     res.json(deletedBlog);
   });
+});
+
+router.delete('/:blogId/like', userIdentifier, authRequired, (req, res, next) => {
+  // Delete blog count and update count on blog table with ID 'blogId'
+  let blog = null;
+  models.BlogCount.destroy({
+    where: {
+      BlogId: req.params.blogId,
+    },
+  })
+  .then((deletedBlogCount) => {
+    models
+    .Blog
+    .find({
+      where: {
+        id: req.params.blogId,
+      },
+    })
+    .then((selectedBlog) =>{
+      let promise = null;
+      if (selectedBlog) {
+        blog = selectedBlog;
+        promise = models.Blog.update({
+          count: blog.count - 1,
+        }, {
+          where: {
+            id: blog.id,
+          },
+        });
+      } else {
+        throw errorFactory.badRequest(req, 'Blog does not exist');
+      }
+      return promise;
+    })
+    .then(() => {
+      res.json(blog);
+    });
+  })
+  .catch(next);
 });
 
 module.exports = router;
