@@ -5,12 +5,12 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 
 // Services
-const errorFactory = require('./Services/errorFactory');
+const errorFactory = require('./services/errorFactory');
 
 // Middlewares
 const cors = require('./middlewares/cors');
 const traceGenerator = require('./middlewares/traceGenerator');
-const authRequired = require('./middlewares/authRequired');
+const userIdentifier = require('./middlewares/userIdentifier');
 
 // Routes
 const auth = require('./routes/auth');
@@ -29,7 +29,7 @@ app.use(cors());
 
 // Register the routes
 app.use('/auth', traceGenerator, auth);
-app.use('/user', traceGenerator, authRequired, users);
+app.use('/user', traceGenerator, userIdentifier, users);
 app.use('/blog', traceGenerator, blogs);
 app.use('/post', traceGenerator, post);
 app.use('/comment', traceGenerator, comments);
@@ -55,6 +55,6 @@ app.use((err, req, res, next) => {
 
 app.listen(3000, () => {
   console.log('API listening on port 3000');
-})
+});
 
 module.exports = app;
