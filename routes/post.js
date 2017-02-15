@@ -31,10 +31,7 @@ router.post('/', userIdentifier, authRequired, (req, res, next) => {
   const content = req.body.content;
   const titleError = validateInputs.validateName(req, title);
   const contentError = validateInputs.validateName(req, content);
-
-  if (titleError || contentError) {
-    next(contentError);
-  } else {
+  if (!titleError || !contentError ) {
     models
     .Posts
     .create({
@@ -45,8 +42,9 @@ router.post('/', userIdentifier, authRequired, (req, res, next) => {
     })
       .then((newPost) => {
       res.json(newPost);
-    })
-    .catch(next);
+    });
+  } else {
+    next(titleError);
   }
 });
 
