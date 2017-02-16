@@ -157,7 +157,7 @@ router.delete('/:blogId', userIdentifier, authRequired, modelDeleteAuthorizer, (
   });
 });
 
-router.delete('/:blogId/like', userIdentifier, authRequired, (req, res, next) => {
+router.delete('/:blogId/like', (req, res, next) => {
   // Delete blog count and update count on blog table with ID 'blogId'
   let blog = null;
   models.BlogCount.destroy({
