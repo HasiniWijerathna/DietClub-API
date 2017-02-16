@@ -56,6 +56,20 @@ router.put('/', userIdentifier, authRequired, (req, res, next) => {
   })
   .catch(next);
 });
+router.get('/:userId', (req, res, next) => {
+  // Return user with ID 'userId'
+  models
+  .User
+  .find({
+     where: {
+       id: req.params.userId,
+     },
+   })
+   .then((existingUser) => {
+      res.json(existingUser);
+   })
+   .catch(next);
+});
 
 router.post('/', userIdentifier, authRequired, (req, res, next) => {
   // Delete user with ID 'userId'
