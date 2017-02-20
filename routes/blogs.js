@@ -23,7 +23,9 @@ router.get('/', userIdentifier, (req, res) => {
   .Blog
   .findAll({
     attributes: ['id', 'name'],
-     include: [models.Posts],
+   include: [models.Posts, models.User],
+
+    //  include: [models.Posts],
     order: [
       ['name', 'ASC'],
     ],
@@ -44,7 +46,7 @@ router.get('/:blogId', userIdentifier, (req, res, next) => {
      where: {
        id: req.params.blogId,
      },
-     include: [models.Posts, models.BlogCount],
+     include: [models.Posts, models.BlogCount, models.User],
    })
    .then((existingBlog) => {
       res.json(existingBlog);

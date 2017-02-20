@@ -57,6 +57,25 @@ router.put('/', userIdentifier, authRequired, (req, res, next) => {
   .catch(next);
 });
 
+router.get('/:userId', userIdentifier, (req, res, next) => {
+  // Return user with ID 'userId'
+  models
+  .User
+  .find({
+     where: {
+       id: req.params.userId,
+     },
+   })
+   .then((existingUser) => {
+     if(existingUser) {
+         res.json(existingUser);
+     } else {
+         throw errorFactory.notFound(req, 'User does not exist');
+     }
+   })
+   .catch(next);
+});
+
 router.post('/', userIdentifier, authRequired, (req, res, next) => {
   // Delete user with ID 'userId'
     findUser(req.user.id, req.body.password)
