@@ -58,13 +58,17 @@ router.get('/:postId', userIdentifier, (req, res, next) => {
      },
      include: [models.Comments],
    })
-   .then((existingPost) => {
-      if (!existingPost) {
-        throw errorFactory.badRequest(req, 'Post does not exist');
-      }
-      res.json(existingPost);
-   })
-   .catch(next);
+  .then((existingPost) => {
+    let promise = null;
+
+    if(existingPost) {
+      promise = res.json(existingPost);
+    } else {
+      throw errorFactory.notFound(req, 'Post does not exist');
+    }
+    return promise;
+  })
+  .catch(next);
 });
 
 router.put('/:postId', userIdentifier, (req, res, next) => {

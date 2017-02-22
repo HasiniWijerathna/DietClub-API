@@ -48,10 +48,17 @@ router.get('/:blogId', userIdentifier, (req, res, next) => {
      },
      include: [models.Posts, models.BlogCount, models.User],
    })
-   .then((existingBlog) => {
-      res.json(existingBlog);
-   })
-   .catch(next);
+  .then((existingBlog) => {
+    let promise = null;
+
+    if(existingBlog) {
+      promise = res.json(existingBlog);
+    } else {
+      throw errorFactory.notFound(req, 'Blog does not exist');
+    }
+    return promise;
+  })
+  .catch(next);
 });
 
 router.post('/', userIdentifier, authRequired, (req, res, next) => {

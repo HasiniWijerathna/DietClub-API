@@ -56,7 +56,7 @@ router.get('/:commentId', (req, res, next) => {
      if(existingComment) {
        promise = res.json(existingComment);
      } else {
-       throw errorFactory.badRequest(req, 'comment does not exist');
+       throw errorFactory.badRequest(req, 'Comment does not exist');
      }
      return promise;
    })
