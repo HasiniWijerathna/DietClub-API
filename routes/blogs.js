@@ -74,6 +74,9 @@ router.post('/', userIdentifier, authRequired, (req, res, next) => {
     })
       .then((newBlog) => {
       res.json(newBlog);
+    })
+    .catch((error) => {
+      next(errorFactory.serverError(req));
     });
   } else {
     // console.log(blogNameError);

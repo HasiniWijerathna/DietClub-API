@@ -63,4 +63,14 @@ module.exports = {
   badRequest: (req, message) => {
     return createErrorObject(req, message || 'Bad request', 400);
   },
+  /**
+   * Create a 'Server' error object
+   * @param  {Object} req     The request object provided by the Express router
+   * @param  {String} message The error message
+   *                          (default : 'Request forbidden')
+   * @return {Error}          The created error object
+   */
+  serverError: (req, message) => {
+    return createErrorObject(req, message || 'Internal server error', 500);
+  },
 };
