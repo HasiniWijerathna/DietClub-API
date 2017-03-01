@@ -4,10 +4,12 @@ module.exports = function(sequelize, DataTypes) {
     name: DataTypes.STRING,
     UserId: DataTypes.INTEGER,
     count: DataTypes.INTEGER,
+    BlogCategoryId: DataTypes.INTEGER,
   }, {
     classMethods: {
       associate: function(models) {
         Blog.belongsTo(models.User);
+        Blog.belongsTo(models.BlogCategory);
         Blog.hasMany(models.Posts);
         Blog.hasMany(models.BlogCount);
       },

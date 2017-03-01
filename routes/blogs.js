@@ -65,11 +65,12 @@ router.post('/', userIdentifier, authRequired, (req, res, next) => {
   // Create new blog
  const name = req.body.name;
  const blogNameError = validateInputs.validateName(req, name);
-  if (!blogNameError ) {
+  if (!blogNameError) {
     models
     .Blog
     .create({
       name: req.body.name,
+      BlogCategoryId: req.body.category,
       UserId: req.user.id,
     })
       .then((newBlog) => {
@@ -79,7 +80,6 @@ router.post('/', userIdentifier, authRequired, (req, res, next) => {
       next(errorFactory.serverError(req));
     });
   } else {
-    // console.log(blogNameError);
     next(blogNameError);
   }
 });

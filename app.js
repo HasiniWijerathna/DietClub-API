@@ -18,6 +18,7 @@ const users = require('./routes/users');
 const blogs = require('./routes/blogs');
 const post = require('./routes/post');
 const comments = require('./routes/comments');
+const blogCategory = require('./routes/blogCategory');
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.use('/user', traceGenerator, userIdentifier, users);
 app.use('/blog', traceGenerator, blogs);
 app.use('/post', traceGenerator, post);
 app.use('/comment', traceGenerator, comments);
+app.use('/blogCategory', traceGenerator, blogCategory);
 
 // catch 404 and forward to error handler
 app.use(traceGenerator, (req, res, next) => {
