@@ -12,7 +12,7 @@ router.get('/', (req, res) => {
   .BlogCategory
   .findAll({
     attributes: ['id', 'name'],
-  //  include: [models.Blogs],
+    include: [models.Blog],
     order: [
       ['name', 'ASC'],
     ],
@@ -33,7 +33,7 @@ router.get('/:categoryId', (req, res, next) => {
      where: {
        id: req.params.categoryId,
      },
-     include: [models.Posts, models.Blogs],
+     include: [models.Blog],
    })
   .then((existingCategory) => {
     let promise = null;

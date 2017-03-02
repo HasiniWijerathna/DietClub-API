@@ -1,7 +1,7 @@
 'use strict';
 module.exports = function(sequelize, DataTypes) {
   const BlogCategory = sequelize.define('BlogCategory', {
-    category: DataTypes.STRING,
+    name: DataTypes.STRING,
     active: DataTypes.BOOLEAN,
   }, {
     classMethods: {
