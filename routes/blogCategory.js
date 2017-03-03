@@ -11,11 +11,8 @@ router.get('/', (req, res) => {
   models
   .BlogCategory
   .findAll({
-    attributes: ['id', 'name'],
+    attributes: ['id', 'name', 'imageURL'],
     include: [models.Blog],
-    order: [
-      ['name', 'ASC'],
-    ],
   })
     .then((allCategories) => {
       console.log(allCategories);
