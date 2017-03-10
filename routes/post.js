@@ -52,7 +52,7 @@ router.get('/:postId', userIdentifier, (req, res, next) => {
   // Return post with ID 'postId'
   models
   .Posts
-  .find({
+  .findAll({
      where: {
        id: req.params.postId,
      },

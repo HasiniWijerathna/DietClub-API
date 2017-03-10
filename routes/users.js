@@ -8,7 +8,6 @@ const authRequired = require('../middlewares/authRequired');
 const userService = require('../services/userService');
 const errorFactory = require('../services/errorFactory');
 
-
 /**
  * Finds the user with the given credentials
  * @param  {String} userId   The email
@@ -56,28 +55,54 @@ router.put('/', userIdentifier, authRequired, (req, res, next) => {
   })
   .catch(next);
 });
-router.get('/:userId', (req, res, next) => {
-  // Return user with ID 'userId'
+
+router.get('/:userId/posts', userIdentifier, (req, res, next) => {
+  // Return posts and posts with ID 'userId'
   models
-  .User
-  .find({
+  .Posts
+  .findAll({
      where: {
-       id: req.params.userId,
+       UserId: req.params.userId,
      },
+    include: [models.Blog],
    })
    .then((existingUser) => {
-      res.json(existingUser);
+     if(existingUser) {
+         res.json(existingUser);
+     } else {
+         throw errorFactory.notFound(req, 'User does not exist');
+     }
    })
    .catch(next);
 });
 
-router.get('/:userId', userIdentifier, (req, res, next) => {
-  // Return user with ID 'userId'
+router.get('/:userId/blogs/favourites', userIdentifier, (req, res, next) => {
+  // Return user favourite blogs
   models
-  .User
-  .find({
+  .BlogCount
+  .findAll({
      where: {
-       id: req.params.userId,
+       UserId: req.params.userId,
+     },
+    include: [models.Blog],
+   })
+   .then((existingUser) => {
+     if(existingUser) {
+         res.json(existingUser);
+     } else {
+         throw errorFactory.notFound(req, 'User does not exist');
+     }
+   })
+   .catch(next);
+});
+
+router.get('/:userId/blogs', userIdentifier, (req, res, next) => {
+  // Return blogs and posts with ID 'userId'
+  models
+  .Blog
+  .findAll({
+     where: {
+       UserId: req.params.userId,
      },
    })
    .then((existingUser) => {

@@ -61,6 +61,29 @@ router.get('/:blogId', userIdentifier, (req, res, next) => {
   .catch(next);
 });
 
+router.get('/:userId', userIdentifier, (req, res, next) => {
+  // Return posts with ID 'blogId'
+  models
+  .Blog
+  .findAll({
+     where: {
+       UserId: req.params.userId,
+     },
+     include: [models.Posts, models.BlogCount, models.User],
+   })
+  .then((existingBlog) => {
+    let promise = null;
+
+    if(existingBlog) {
+      promise = res.json(existingBlog);
+    } else {
+      throw errorFactory.notFound(req, 'Blog does not exist');
+    }
+    return promise;
+  })
+  .catch(next);
+});
+
 router.post('/', userIdentifier, authRequired, (req, res, next) => {
   // Create new blog
  const name = req.body.name;
