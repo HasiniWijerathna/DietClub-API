@@ -27,6 +27,26 @@ const findUser = (userId, password) => {
       },
     });
 };
+
+router.get('/:userId', userIdentifier, (req, res, next) => {
+  // Return user with ID 'userId'
+  models
+  .User
+  .find({
+     where: {
+       id: req.params.userId,
+     },
+   })
+   .then((existingUser) => {
+     if(existingUser) {
+         res.json(existingUser);
+     } else {
+         throw errorFactory.notFound(req, 'User does not exist');
+     }
+   })
+   .catch(next);
+});
+
 router.put('/', userIdentifier, authRequired, (req, res, next) => {
   // Update user with ID 'userId'
   models
