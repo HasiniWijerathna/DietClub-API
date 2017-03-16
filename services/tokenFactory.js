@@ -10,7 +10,8 @@ const config = require('../config');
  */
 const issueAuthToken = (data) => {
   const privateKey = config.authToken.privateKey;
-  const expiresIn = config.authToken.expiresIn;
+  // const expiresIn = config.authToken.expiresIn;
+  const expiresIn = '10h';
 
   return jwt.sign(data, privateKey, {expiresIn});
 };

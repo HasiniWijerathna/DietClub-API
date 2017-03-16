@@ -7,6 +7,7 @@ const errorFactory = require('../services/errorFactory');
  * @param  {object}   res  The response object provided by the Express router
  * @param  {Function} next The callback to move the operation forward
  */
+
 const authRequired = (req, res, next) => {
   if(req.user) {
     next();
