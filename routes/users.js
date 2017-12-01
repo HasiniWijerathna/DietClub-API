@@ -76,64 +76,6 @@ router.put('/', userIdentifier, authRequired, (req, res, next) => {
   .catch(next);
 });
 
-router.get('/:userId/posts', userIdentifier, (req, res, next) => {
-  // Return posts and posts with ID 'userId'
-  models
-  .Posts
-  .findAll({
-     where: {
-       UserId: req.params.userId,
-     },
-    include: [models.Blog],
-   })
-   .then((existingUser) => {
-     if(existingUser) {
-         res.json(existingUser);
-     } else {
-         throw errorFactory.notFound(req, 'User does not exist');
-     }
-   })
-   .catch(next);
-});
-
-router.get('/:userId/blogs/favourites', userIdentifier, (req, res, next) => {
-  // Return user favourite blogs
-  models
-  .BlogCount
-  .findAll({
-     where: {
-       UserId: req.params.userId,
-     },
-    include: [models.Blog],
-   })
-   .then((existingUser) => {
-     if(existingUser) {
-         res.json(existingUser);
-     } else {
-         throw errorFactory.notFound(req, 'User does not exist');
-     }
-   })
-   .catch(next);
-});
-
-router.get('/:userId/blogs', userIdentifier, (req, res, next) => {
-  // Return blogs and posts with ID 'userId'
-  models
-  .Blog
-  .findAll({
-     where: {
-       UserId: req.params.userId,
-     },
-   })
-   .then((existingUser) => {
-     if(existingUser) {
-         res.json(existingUser);
-     } else {
-         throw errorFactory.notFound(req, 'User does not exist');
-     }
-   })
-   .catch(next);
-});
 
 router.post('/', userIdentifier, authRequired, (req, res, next) => {
   // Delete user with ID 'userId'
