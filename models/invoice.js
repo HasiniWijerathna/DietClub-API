@@ -3,7 +3,7 @@ module.exports = (sequelize, DataTypes) => {
   var Invoice = sequelize.define('Invoice', {
     total: DataTypes.DOUBLE,
     discount: DataTypes.DOUBLE,
-    paymentType: DataTypes.ENUM,
+    // paymentType: DataTypes.ENUM,
     date: DataTypes.DATE
   }, {
     classMethods: {

@@ -13,8 +13,10 @@ const traceGenerator = require('./middlewares/traceGenerator');
 const userIdentifier = require('./middlewares/userIdentifier');
 
 // Routes
-const auth = require('./routes/auth');
-const users = require('./routes/users');
+// const auth = require('./routes/auth');
+// const users = require('./routes/users');
+const mail = require('./routes/mail');
+const payment = require('./routes/payment');
 
 const app = express();
 
@@ -25,9 +27,10 @@ app.use(cookieParser());
 app.use(cors());
 
 // Register the routes
-app.use('/auth', traceGenerator, auth);
-app.use('/user', traceGenerator, userIdentifier, users);
-
+// app.use('/auth', traceGenerator, auth);
+// app.use('/user', traceGenerator, userIdentifier, users);
+app.use('/mail', traceGenerator, mail);
+app.use('/payment', traceGenerator, payment);
 
 // catch 404 and forward to error handler
 app.use(traceGenerator, (req, res, next) => {
